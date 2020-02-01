@@ -4,6 +4,16 @@
  * This generated file contains a sample Kotlin application project to get you started.
  */
 
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "com.cdsap:talaiot:1.0.10"
+    }
+}
+
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin.
     id 'org.jetbrains.kotlin.jvm' version '1.3.61'
@@ -16,6 +26,7 @@ repositories {
     // Use jcenter for resolving dependencies.
     // You can declare any Maven/Ivy/file repository here.
     jcenter()
+    mavenCentral()
 }
 
 dependencies {
@@ -35,4 +46,28 @@ dependencies {
 application {
     // Define the main class for the application.
     mainClassName = 'com.github.mydogtom.AppKt'
+}
+
+tasks.register("DummyTask")
+
+apply plugin: 'talaiot'
+import com.cdsap.talaiot.logger.LogTracker
+talaiot {
+    logger = LogTracker.Mode.INFO
+
+    publishers {
+      influxDbPublisher {
+          dbName = "tracking"
+          url = "http://localhost:8086"
+          taskMetricName = "task"
+          buildMetricName = "build"
+          publishTaskMetrics = false
+      }
+    }
+
+    filter {
+      tasks {
+        excludes = ["DummyTask"]
+      }
+    }
 }
